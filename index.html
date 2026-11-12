@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Sort Splash: Colour Tube Puzzle</title>
+<style>
+:root{--bg:#0f172a;--bg2:#1e1b4b;--bg3:#312e81;--card:rgba(255,255,255,.08);--ink:#f8fafc;--muted:#cbd5e1;--primary:#6366f1;--primary2:#8b5cf6;--accent:#f59e0b;--gold:#fbbf24;--good:#10b981;--bad:#ef4444;--warn:#f59e0b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:linear-gradient(160deg,#0f172a 0%,#1e1b4b 55%,#312e81 100%);background-attachment:fixed;color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;font-weight:500;min-height:100%}
+body[data-theme="sunset"]{background:linear-gradient(160deg,#1c0a2e 0%,#7c2d12 100%);--primary:#f97316;--primary2:#ec4899}
+body[data-theme="ocean"]{background:linear-gradient(160deg,#082f49 0%,#0e7490 100%);--primary:#06b6d4;--primary2:#3b82f6}
+body[data-theme="forest"]{background:linear-gradient(160deg,#052e16 0%,#14532d 100%);--primary:#22c55e;--primary2:#14b8a6}
+body{display:flex;justify-content:center}
+#app{width:100%;max-width:560px;min-height:100vh;padding:14px 14px 28px;display:flex;flex-direction:column;gap:12px}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.5px;margin:0;line-height:1.2}
+.grad-text{background:linear-gradient(90deg,#818cf8,#c084fc,#fbbf24);-webkit-background-clip:text;background-clip:text;color:transparent}
+h2,h3{font-size:20px;font-weight:700;margin:0}
+h1 small{display:block;font-size:12px;color:var(--muted);font-weight:400}
+.pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 12px;font-size:13px;font-weight:700;white-space:nowrap}
+#coinsPill{background:var(--accent);color:#111827;border-color:transparent}
+#streakPill.flame{box-shadow:0 0 12px rgba(245,158,11,.8);border-color:var(--gold)}
+.card{background:var(--card);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.hidden{display:none!important}
+button{font:inherit;font-size:16px;font-weight:700;color:var(--ink);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:12px 16px;cursor:pointer;touch-action:manipulation;min-height:52px}
+button:hover{transform:translateY(-2px)}
+button:active{transform:scale(.97)}
+button.primary{background:linear-gradient(90deg,var(--primary),var(--primary2));color:#fff;border-color:transparent;border-radius:999px;font-weight:700}
+button.good{background:#10b981;border-color:#10b981;font-weight:700}
+button:disabled{opacity:.45;cursor:not-allowed}
+.big{font-size:18px;text-align:center}
+.huge{font-size:32px;font-weight:800;letter-spacing:-.5px;text-align:center}
+.muted{color:var(--muted);font-size:13px;line-height:1.5}
+.hud{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between}
+.hud .pill{background:#0f172a}
+.bar{height:14px;background:rgba(255,255,255,.14);border-radius:999px;overflow:hidden}
+.bar>i{display:block;height:100%;background:#22c55e;transition:width .25s linear}
+.level-progress{height:8px;margin-top:8px}
+.level-progress>i{background:linear-gradient(90deg,var(--primary),var(--primary2))}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row button{flex:1}
+footer{text-align:center}
+.shake{animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+.confetti-bit{position:absolute;top:-12px;width:10px;height:14px;opacity:.95;animation:cfall 1.2s ease-in forwards}
+@keyframes cfall{to{transform:translateY(105vh) rotate(540deg);opacity:.6}}
+#popups{position:relative;height:0}
+.popup{position:absolute;left:50%;transform:translateX(-50%);font-size:22px;font-weight:800;color:#fde047;text-shadow:0 2px 6px rgba(0,0,0,.7);animation:popfloat .9s ease-out forwards;pointer-events:none;white-space:nowrap;z-index:40}
+@keyframes popfloat{0%{opacity:0;transform:translate(-50%,10px) scale(.8)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-34px) scale(1.1)}}
+#levelBanner{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%) scale(.9);background:linear-gradient(90deg,var(--accent),var(--gold));color:#111827;font-size:24px;font-weight:800;padding:14px 22px;border-radius:16px;z-index:60;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:bannerpop 1.2s ease-out forwards;pointer-events:none;text-align:center}
+@keyframes bannerpop{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+.tut-step{font-size:44px;text-align:center;margin:8px 0}
+.tut-dots{text-align:center;font-size:18px;letter-spacing:4px}
+.theme-btn.on{outline:3px solid var(--accent)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0}
+.cal div{background:#0f172a;border-radius:10px;padding:8px 2px;text-align:center;font-size:12px;font-weight:700}
+.cal div.done{background:#16a34a}
+.cal div.today{outline:2px solid var(--accent)}
+.badge{display:inline-block;background:#0f172a;border:1px solid #475569;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700;margin:2px}
+.badge.earned{background:var(--gold);border-color:var(--gold);color:#111827}
+.pop{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+/* ---- Tube board ---- */
+.board{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:14px 0 6px}
+.tube-col{display:flex;flex-direction:column;align-items:center;gap:4px;width:64px}
+.tube{width:64px;height:132px;border:3px solid rgba(255,255,255,.35);border-top:none;border-radius:0 0 16px 16px;background:rgba(255,255,255,.06);padding:6px 6px 8px;display:flex;flex-direction:column-reverse;gap:3px;cursor:pointer;min-height:0;position:relative}
+.tube.sel{border-color:var(--gold);transform:translateY(-8px);box-shadow:0 0 14px rgba(245,158,11,.7)}
+.tube.locked{opacity:.8}
+.tube.hint-glow{outline:3px solid var(--good);box-shadow:0 0 14px rgba(16,185,129,.8)}
+.layer{height:24px;min-height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.7);flex:0 0 auto}
+.layer.dark-ink{color:#1F2937;text-shadow:none}
+.tube-label{font-size:11px;font-weight:700;color:var(--muted);text-align:center;min-height:15px;line-height:1.2}
+.lock-tag{position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:20px;pointer-events:none}
+.droplet{position:absolute;left:50%;top:0;width:18px;height:18px;margin-left:-9px;border-radius:50%;animation:drop .35s ease-in forwards;pointer-events:none;z-index:5}
+@keyframes drop{from{transform:translateY(-34px) scale(1);opacity:1}to{transform:translateY(8px) scale(.7);opacity:0}}
+@media (max-width:380px){.tube-col{width:56px}.tube{width:56px;height:124px}}
+</style>
+<!-- Playables SDK MUST be the first script. No other external script is loaded. -->
+<script src="https://www.youtube.com/game_api/v1"></script>
+</head>
+<body>
+<div id="confetti"></div>
+<div id="levelBanner" class="hidden"></div>
+<div id="app">
+  <header>
+    <h1 class="grad-text">Sort Splash<small>Colour Tube Puzzle &middot; Ages 13+</small></h1>
+    <span class="pill" id="coinsPill">Coins 0</span>
+  </header>
+
+  <div class="hud" aria-label="Game status">
+    <span class="pill" id="levelPill">Level 1</span>
+    <span class="pill" id="scorePill">Score 0</span>
+    <span class="pill" id="movesPill">Moves 0</span>
+    <span class="pill" id="streakPill">Streak 0</span>
+  </div>
+  <div class="bar" aria-label="Time remaining"><i id="timeBar" style="width:100%"></i></div>
+  <div class="muted" id="timerText" style="text-align:center">Take your time</div>
+  <div class="bar level-progress" aria-label="Level progress"><i id="levelBar" style="width:0%"></i></div>
+  <div class="muted" id="levelProgText" style="text-align:center">Level progress: 0/3 tubes sorted</div>
+  <div id="popups"></div>
+
+  <!-- MENU -->
+  <section class="card" id="menuScreen">
+    <p class="huge grad-text" style="margin:4px 0">Sort Splash</p>
+    <p class="big" style="margin:4px 0">🧪 Pour. Sort. Splash!</p>
+    <p class="muted" style="text-align:center">One tap to play. First coins in your first 10 seconds.</p>
+    <p class="muted" id="saveLine">Best score: 0 &middot; Best level: 0 &middot; Daily streak: 0 day(s)</p>
+    <p class="muted" id="bestLine">Blitz best: 0 sorts</p>
+    <div class="row">
+      <button class="primary" id="playBtn" type="button">▶ TAP TO PLAY — Classic</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button id="blitzBtn" type="button">⚡ 60-Second Blitz</button>
+      <button id="dailyBtn" type="button">Daily Challenge</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button id="tutorialBtn" type="button">How to play (20 sec)</button>
+      <button id="soundBtn" type="button" aria-pressed="true">Sound: On</button>
+    </div>
+    <hr style="border-color:#475569">
+    <p style="margin:6px 0"><strong>🎯 Today's mission</strong></p>
+    <p class="muted" id="missionLine">Win 2 levels today — 0/2</p>
+    <p style="margin:6px 0"><strong>🏆 Achievements</strong></p>
+    <p id="achList"></p>
+    <p style="margin:6px 0"><strong>🎁 Daily reward</strong></p>
+    <div class="cal" id="rewardCal"></div>
+    <div class="row"><button id="claimBtn" type="button">Claim today's reward</button></div>
+    <p style="margin:6px 0"><strong>🎨 Themes (coins only — no purchases)</strong></p>
+    <div class="row" id="themeRow"></div>
+  </section>
+
+  <!-- TUTORIAL -->
+  <section class="card hidden" id="tutorialScreen">
+    <p class="huge" id="tutTitle">Step 1 — Pick a tube</p>
+    <div class="tut-step" id="tutEmoji">🧪</div>
+    <p class="big" id="tutText">Tap a tube to select its top colour.</p>
+    <p class="tut-dots" id="tutDots">●○○</p>
+    <div class="row">
+      <button class="primary" id="tutNextBtn" type="button">Next</button>
+      <button id="tutSkipBtn" type="button">Skip</button>
+    </div>
+  </section>
+
+  <!-- PLAY (Classic) -->
+  <section class="card hidden" id="playScreen">
+    <p class="big" style="margin-top:0" id="playTitle">Sort every tube to a single colour</p>
+    <p class="muted" style="text-align:center" id="playHint">Tap a tube to pick its top colour, then tap another tube to pour.</p>
+    <div class="board" id="tubesBoard" role="group" aria-label="Colour tubes"></div>
+    <p class="muted" id="pourMsg" style="text-align:center;min-height:20px"></p>
+    <div class="row">
+      <button id="undoBtn" type="button">Undo (5 coins)</button>
+      <button id="hintBtn" type="button">Hint (10 coins)</button>
+      <button id="pauseBtn" type="button">Pause</button>
+    </div>
+  </section>
+
+  <!-- BLITZ -->
+  <section class="card hidden" id="blitzScreen">
+    <p class="huge" style="margin-top:0">⚡ 60-Second Blitz</p>
+    <p class="muted" style="text-align:center">Sort as many mini-puzzles as you can in 60 seconds. Each sort builds your combo!</p>
+    <p class="big" id="blitzScore">Sorts 0 &middot; Combo x1 &middot; Score 0</p>
+    <div class="board" id="blitzBoard" role="group" aria-label="Blitz colour tubes"></div>
+    <p class="muted" id="blitzMsg" style="text-align:center;min-height:20px"></p>
+    <div class="row"><button id="blitzPauseBtn" type="button">Pause</button><button id="blitzMenuBtn" type="button">Main menu</button></div>
+  </section>
+
+  <!-- BLITZ OVER -->
+  <section class="card hidden" id="blitzOverScreen">
+    <p class="huge">⚡ Blitz over!</p>
+    <p class="muted" style="text-align:center" id="blitzOverDetail"></p>
+    <div class="row"><button class="primary" id="blitzAgainBtn" type="button">Play Blitz again</button><button id="blitzOverMenuBtn" type="button">Main menu</button></div>
+  </section>
+
+  <!-- PAUSED -->
+  <section class="card hidden" id="pauseScreen">
+    <p class="big">Paused</p>
+    <p class="muted" style="text-align:center">The timer is stopped.</p>
+    <div class="row"><button class="primary" id="resumeBtn" type="button">Resume</button><button id="menuBtn" type="button">Main menu</button></div>
+  </section>
+
+  <!-- LEVEL COMPLETE -->
+  <section class="card hidden" id="levelScreen">
+    <p class="big" id="levelTitle">Level complete!</p>
+    <p class="muted" style="text-align:center" id="levelDetail"></p>
+    <p class="muted" style="text-align:center" id="adNote"></p>
+    <div class="row"><button class="primary" id="nextBtn" type="button">Next level</button><button id="levelMenuBtn" type="button">Main menu</button></div>
+  </section>
+
+  <!-- LEVEL FAILED (move limit) -->
+  <section class="card hidden" id="failScreen">
+    <p class="big">Out of moves!</p>
+    <p class="muted" style="text-align:center" id="failDetail"></p>
+    <div class="row">
+      <button class="good" id="continueBtn" type="button">Continue: +5 moves (ad)</button>
+      <button id="retryBtn" type="button">Retry level</button>
+    </div>
+    <div class="row" style="margin-top:8px"><button id="failMenuBtn" type="button">Main menu</button></div>
+    <p class="muted" style="text-align:center">The Continue button asks the platform for a rewarded ad. In this file the ad call is stubbed when no platform is present, so no real ad plays here.</p>
+  </section>
+
+  <footer class="muted">Original game. No login, no purchases, no external links. Progress is saved only through the YouTube Playables SDK when present.</footer>
+</div>
+<script>
+'use strict';
+/* ============================================================
+   Sort Splash v1 — pure logic first (testable in Node via vm).
+   No browser storage, no code evaluation, no external calls.
+   The only external URL in the whole document is the SDK
+   script tag in <head>.
+   ============================================================ */
+var COLOURS = {
+  red:{hex:'#EF4444',label:'Red'}, blue:{hex:'#3B82F6',label:'Blue'},
+  yellow:{hex:'#FACC15',label:'Yellow'}, green:{hex:'#22C55E',label:'Green'},
+  purple:{hex:'#A855F7',label:'Purple'}, orange:{hex:'#F97316',label:'Orange'},
+  pink:{hex:'#EC4899',label:'Pink'}, teal:{hex:'#14B8A6',label:'Teal'}
+};
+var COLOUR_IDS = ['red','blue','yellow','green','purple','orange','pink','teal'];
+/* Colour-blind safety: every colour also has a name AND a distinct shape glyph,
+   so no step in the game can be solved by colour alone. */
+var SHAPES = {red:'●', blue:'■', yellow:'▲', green:'◆', purple:'★', orange:'⬢', pink:'♥', teal:'✚'};
+function shapeOf(id){ return SHAPES[id] || '●'; }
+function isLightColour(id){ return id==='yellow'; }
+var TUBE_CAP = 4;
+function mulberry32(seed){
+  var t = seed >>> 0;
+  return function(){ t += 0x6D2B79F5; var r = Math.imul(t ^ (t>>>15), 1|t); r ^= r + Math.imul(r ^ (r>>>7), 61|r); return ((r ^ (r>>>14))>>>0)/4294967296; };
+}
+function cloneTubes(tubes){ return tubes.map(function(t){ return t.slice(); }); }
+function topColour(tube){ return tube.length ? tube[tube.length-1] : null; }
+function topRunLength(tube){
+  if(!tube.length) return 0;
+  var c = tube[tube.length-1], n = 0;
+  for(var i=tube.length-1; i>=0 && tube[i]===c; i--) n++;
+  return n;
+}
+function isUniform(tube){
+  for(var i=1;i<tube.length;i++) if(tube[i]!==tube[0]) return false;
+  return true;
+}
+function mixedTubeCount(tubes){
+  var n=0;
+  tubes.forEach(function(t){ if(t.length>1 && !isUniform(t)) n++; });
+  return n;
+}
+/* Pour rules, enforced exactly:
+   - only the top contiguous same-colour run moves (up to free space)
+   - destination must have space
+   - destination top must match the poured colour OR destination must be empty
+   - anything else is rejected with a reason and no state change */
+function canPour(tubes, from, to){
+  if(from===to) return {ok:false, reason:'same-tube'};
+  var A=tubes[from], B=tubes[to];
+  if(!A || !B) return {ok:false, reason:'bad-tube'};
+  if(A.length===0) return {ok:false, reason:'empty-source'};
+  if(B.length>=TUBE_CAP) return {ok:false, reason:'full'};
+  var c=topColour(A);
+  if(B.length>0 && topColour(B)!==c) return {ok:false, reason:'mismatch'};
+  return {ok:true, colour:c, count:Math.min(topRunLength(A), TUBE_CAP-B.length)};
+}
+function pourTubes(tubes, from, to){
+  var chk=canPour(tubes, from, to);
+  if(!chk.ok) return null;
+  var next=cloneTubes(tubes);
+  for(var i=0;i<chk.count;i++) next[to].push(next[from].pop());
+  return {tubes:next, moved:chk.count, colour:chk.colour};
+}
+function hasLegalMove(tubes, locked){
+  locked = locked || tubes.map(function(){ return false; });
+  for(var i=0;i<tubes.length;i++){
+    if(locked[i]) continue;
+    for(var j=0;j<tubes.length;j++){
+      if(i!==j && !locked[j] && canPour(tubes, i, j).ok) return true;
+    }
+  }
+  return false;
+}
+function isTubeComplete(tube){ return tube.length===TUBE_CAP && isUniform(tube); }
+function isSolved(tubes){
+  for(var i=0;i<tubes.length;i++){
+    if(tubes[i].length!==0 && !isTubeComplete(tubes[i])) return false;
+  }
+  return true;
+}
+function progressFraction(tubes, nColours){
+  if(!nColours) return 0;
+  var done=0;
+  tubes.forEach(function(t){ if(isTubeComplete(t)) done++; });
+  return done/nColours;
+}
+function encodeTubes(tubes, locked){
+  return tubes.map(function(t,i){ return ((locked && locked[i])?'L':'')+t.join(','); }).join('|');
+}
+/* Solver: breadth-first search over tube states, with the locked-tube rule
+   (a locked tube cannot be used; after every successful pour the first
+   locked tube unlocks). Pruning: never move from a complete tube; never
+   relocate a uniform tube into an empty tube — unless a tube is still
+   locked, in which case that relocation is the only way to trigger the
+   unlock; only the first empty tube is tried as a destination (empty
+   tubes are interchangeable). */
+function solveLevel(tubes, locked, maxNodes){
+  locked = locked || tubes.map(function(){ return false; });
+  maxNodes = maxNodes || 80000;
+  var startTubes = cloneTubes(tubes);
+  var startLocked = locked.slice();
+  if(isSolved(startTubes)) return [];
+  var seen = {};
+  seen[encodeTubes(startTubes, startLocked)] = true;
+  var queue = [{tubes:startTubes, locked:startLocked, moves:[]}];
+  var head = 0, nodes = 0;
+  while(head < queue.length){
+    var cur = queue[head++];
+    nodes++;
+    if(nodes > maxNodes) return null;
+    for(var i=0;i<cur.tubes.length;i++){
+      if(cur.locked[i]) continue;
+      var src = cur.tubes[i];
+      if(src.length===0) continue;
+      /* A complete tube never needs to move — unless a tube is still
+         locked, when relocating it is the only way to trigger the unlock. */
+      var anyLocked = cur.locked.some(function(l){ return l; });
+      if(isTubeComplete(src) && !anyLocked) continue;
+      var triedEmpty = false;
+      for(var j=0;j<cur.tubes.length;j++){
+        if(j===i || cur.locked[j]) continue;
+        var dst = cur.tubes[j];
+        if(dst.length===0){
+          if(triedEmpty) continue;
+          triedEmpty = true;
+          /* Relocating a uniform tube into an empty tube changes nothing —
+             UNLESS a tube is still locked: then the pour itself is the
+             unlock trigger, so the move must be allowed. */
+          if(isUniform(src) && !cur.locked.some(function(l){ return l; })) continue;
+        }
+        var chk = canPour(cur.tubes, i, j);
+        if(!chk.ok) continue;
+        var res = pourTubes(cur.tubes, i, j);
+        var nextLocked = cur.locked.slice();
+        for(var k=0;k<nextLocked.length;k++){ if(nextLocked[k]){ nextLocked[k]=false; break; } }
+        var key = encodeTubes(res.tubes, nextLocked);
+        if(seen[key]) continue;
+        seen[key] = true;
+        var moves = cur.moves.concat([{from:i, to:j}]);
+        if(isSolved(res.tubes)) return moves;
+        queue.push({tubes:res.tubes, locked:nextLocked, moves:moves});
+      }
+    }
+  }
+  return null;
+}
+function levelConfig(level){
+  if(level<=3)  return {colours:3, tubes:5, empty:2, locks:0, moveLimit:false, unpours:3, par:90};
+  if(level<=7)  return {colours:4, tubes:6, empty:2, locks:0, moveLimit:false, unpours:5, par:120};
+  if(level<=11) return {colours:5, tubes:7, empty:2, locks:1, moveLimit:false, unpours:7, par:150};
+  if(level<=19) return {colours:5, tubes:6, empty:1, locks:1, moveLimit:true,  unpours:9, par:150};
+  return           {colours:6, tubes:7, empty:1, locks:2, moveLimit:true,  unpours:12, par:180};
+}
+/* Level generator: start from the solved state and apply random valid
+   reverse-pours ("un-pours"). An un-pour moves m layers of the top run
+   from A onto B (B only needs space); it is reversible as a legal forward
+   pour only when A keeps that colour on top afterwards (m < run length)
+   or A is emptied entirely — the generator enforces exactly that, so the
+   reverse sequence is a guaranteed legal solution. The generator verifies
+   the solution by simulating it, and retries until it holds. */
+function generateLevel(level, rng){
+  rng = rng || mulberry32(level*2654435761 + 12345);
+  var cfg = levelConfig(level);
+  var shuffled = COLOUR_IDS.slice();
+  for(var s=shuffled.length-1;s>0;s--){ var j=Math.floor(rng()*(s+1)); var tmp=shuffled[s]; shuffled[s]=shuffled[j]; shuffled[j]=tmp; }
+  var colourIds = shuffled.slice(0, cfg.colours);
+  for(var attempt=0; attempt<80; attempt++){
+    var tubes = colourIds.map(function(c){ return [c,c,c,c]; });
+    for(var e=0;e<cfg.empty;e++) tubes.push([]);
+    var unpours = [];
+    var steps = cfg.unpours + Math.floor(rng()*3);
+    for(var k=0;k<steps;k++){
+      var nonEmpty = [];
+      tubes.forEach(function(t,idx){ if(t.length>0) nonEmpty.push(idx); });
+      if(!nonEmpty.length) break;
+      var A = nonEmpty[Math.floor(rng()*nonEmpty.length)];
+      var targets = [];
+      tubes.forEach(function(t,idx){ if(idx!==A && t.length<TUBE_CAP) targets.push(idx); });
+      if(!targets.length) continue;
+      var B = targets[Math.floor(rng()*targets.length)];
+      var run = topRunLength(tubes[A]);
+      var free = TUBE_CAP - tubes[B].length;
+      var maxM = Math.min(run, free);
+      var validM = [];
+      for(var m=1;m<=maxM;m++){ if(m<run || tubes[A].length===m) validM.push(m); }
+      if(!validM.length) continue;
+      var mv = validM[Math.floor(rng()*validM.length)];
+      var colour = topColour(tubes[A]);
+      for(var q=0;q<mv;q++) tubes[B].push(tubes[A].pop());
+      unpours.push({from:A, to:B, count:mv, colour:colour});
+    }
+    if(isSolved(tubes)) continue;
+    if(mixedTubeCount(tubes)<1) continue;
+    /* The forward solution is the exact reverse of the un-pours. */
+    var solution = unpours.slice().reverse().map(function(u){ return {from:u.to, to:u.from}; });
+    /* Simulate it: every step must be a legal pour and the end must be solved. */
+    var sim = cloneTubes(tubes), okSim = true;
+    for(var si=0; si<solution.length; si++){
+      var st = solution[si];
+      if(!canPour(sim, st.from, st.to).ok){ okSim=false; break; }
+      sim = pourTubes(sim, st.from, st.to).tubes;
+    }
+    if(!okSim || !isSolved(sim)) continue;
+    /* Locked tubes: lock tubes that are not needed in the first `locks`
+       moves of the known solution (each pour unlocks one locked tube). */
+    var locked = tubes.map(function(){ return false; });
+    var lockCount = cfg.locks;
+    if(lockCount>0){
+      var early = {};
+      for(var ei=0; ei<Math.min(lockCount, solution.length); ei++){ early[solution[ei].from]=true; early[solution[ei].to]=true; }
+      var candidates = [];
+      tubes.forEach(function(t,idx){ if(!early[idx]) candidates.push(idx); });
+      for(var ci=candidates.length-1;ci>0;ci--){ var cj=Math.floor(rng()*(ci+1)); var tt=candidates[ci]; candidates[ci]=candidates[cj]; candidates[cj]=tt; }
+      for(var li=0; li<Math.min(lockCount, candidates.length); li++) locked[candidates[li]]=true;
+    }
+    return {
+      level:level, tubes:tubes, locked:locked, colours:colourIds.slice(),
+      config:cfg, solution:solution, solutionLength:solution.length,
+      moveLimit: cfg.moveLimit ? solution.length+8 : null, par:cfg.par
+    };
+  }
+  /* Fallback (should not happen): a trivially solvable 3-colour level. */
+  return {
+    level:level,
+    tubes:[['red','red','blue','blue'],['blue','blue','red','red'],[],[]],
+    locked:[false,false,false,false],
+    colours:['red','blue'], config:cfg, solution:[{from:0,to:2},{from:1,to:3}],
+    solutionLength:2, moveLimit: cfg.moveLimit ? 10 : null, par:cfg.par
+  };
+}
+function generateMini(rng){
+  rng = rng || mulberry32((Date.now()^0x5f3759df)>>>0);
+  var lv = generateLevel(2, rng);
+  return {tubes:lv.tubes, locked:lv.locked, colours:lv.colours, solution:lv.solution, solutionLength:lv.solution.length};
+}
+function levelScore(level, movesUsed, moveLimit, streak, elapsedSec, par){
+  var s = 100 + Math.max(0, streak)*20;
+  if(moveLimit) s += Math.max(0, moveLimit-movesUsed)*10;
+  s += Math.max(0, Math.floor(par - elapsedSec));
+  return s < 0 ? 0 : s;
+}
+function blitzPoints(combo){ return 50 * Math.max(1, combo); }
+function todayKey(d){ d = d || new Date(); return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0'); }
+function yesterdayKey(d){ d = d || new Date(); var y = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()-1)); return todayKey(y); }
+function nextStreak(lastDate, today, currentStreak){
+  if(!lastDate) return 1;
+  if(lastDate===today) return currentStreak;
+  var a = new Date(lastDate+'T00:00:00Z'), b = new Date(today+'T00:00:00Z');
+  var diff = Math.round((b-a)/86400000);
+  if(diff===1) return currentStreak+1;
+  if(diff>1) return 1;
+  return currentStreak;
+}
+var THEMES = {
+  'default':{label:'Classic', cost:0},
+  'sunset':{label:'Sunset', cost:100},
+  'ocean':{label:'Ocean', cost:200},
+  'forest':{label:'Forest', cost:300}
+};
+var THEME_IDS = ['default','sunset','ocean','forest'];
+var ACHIEVEMENTS = [
+  {id:'first-pour', label:'First Pour'},
+  {id:'levels10', label:'10 Levels'},
+  {id:'blitz5', label:'Blitz 5'},
+  {id:'daily3', label:'Daily 3-Day'},
+  {id:'flawless', label:'Flawless Win'}
+];
+var DAILY_REWARDS = [10,20,30,40,50,75,100];
+function dailyReward(day){ day = Math.max(1, Math.min(7, day||1)); return DAILY_REWARDS[day-1]; }
+function nextRewardDay(lastClaimDate, today, claimDay){
+  if(lastClaimDate===today) return claimDay;
+  if(lastClaimDate===yesterdayKey(new Date(today+'T00:00:00Z'))) return Math.min(7, (claimDay||0)+1);
+  return 1;
+}
+function validSaveNum(v){ return typeof v==='number' && isFinite(v) && v>=0 && Math.floor(v)===v; }
+function sanitizeSave(d){
+  d = d || {};
+  var out = {bestScore:0, bestLevel:0, level:1, coins:0, dailyStreak:0, lastPlayDate:'', score:0,
+    blitzBest:0, themesOwned:['default'], activeTheme:'default', achievements:{},
+    missions:{date:'', levelsWon:0, done:false}, dailyClaimDay:0, lastRewardDate:'', tutorialSeen:false};
+  if(validSaveNum(d.bestScore)) out.bestScore=d.bestScore;
+  if(validSaveNum(d.bestLevel)) out.bestLevel=d.bestLevel;
+  if(validSaveNum(d.level) && d.level>=1) out.level=d.level;
+  if(validSaveNum(d.coins)) out.coins=d.coins;
+  if(validSaveNum(d.dailyStreak)) out.dailyStreak=d.dailyStreak;
+  if(validSaveNum(d.blitzBest)) out.blitzBest=d.blitzBest;
+  if(typeof d.lastPlayDate==='string' && /^\d{4}-\d{2}-\d{2}$/.test(d.lastPlayDate)) out.lastPlayDate=d.lastPlayDate;
+  if(typeof d.lastRewardDate==='string' && /^\d{4}-\d{2}-\d{2}$/.test(d.lastRewardDate)) out.lastRewardDate=d.lastRewardDate;
+  if(validSaveNum(d.dailyClaimDay) && d.dailyClaimDay<=7) out.dailyClaimDay=d.dailyClaimDay;
+  if(d.tutorialSeen===true) out.tutorialSeen=true;
+  if(Array.isArray(d.themesOwned)){
+    var owned = d.themesOwned.filter(function(t){ return THEME_IDS.indexOf(t)!==-1; });
+    if(owned.indexOf('default')===-1) owned.unshift('default');
+    out.themesOwned = owned;
+  }
+  if(typeof d.activeTheme==='string' && out.themesOwned.indexOf(d.activeTheme)!==-1) out.activeTheme=d.activeTheme;
+  if(d.achievements && typeof d.achievements==='object'){
+    ACHIEVEMENTS.forEach(function(a){ if(d.achievements[a.id]===true) out.achievements[a.id]=true; });
+  }
+  if(d.missions && typeof d.missions==='object'){
+    if(typeof d.missions.date==='string' && /^\d{4}-\d{2}-\d{2}$/.test(d.missions.date)) out.missions.date=d.missions.date;
+    if(validSaveNum(d.missions.levelsWon)) out.missions.levelsWon=d.missions.levelsWon;
+    if(d.missions.done===true) out.missions.done=true;
+  }
+  return out;
+}
+if(typeof window!=='undefined'){ window.__sortSplashPure = {canPour:canPour, pourTubes:pourTubes, isSolved:isSolved, isTubeComplete:isTubeComplete, isUniform:isUniform, topColour:topColour, topRunLength:topRunLength, mixedTubeCount:mixedTubeCount, progressFraction:progressFraction, encodeTubes:encodeTubes, solveLevel:solveLevel, hasLegalMove:hasLegalMove, levelConfig:levelConfig, generateLevel:generateLevel, generateMini:generateMini, levelScore:levelScore, blitzPoints:blitzPoints, todayKey:todayKey, yesterdayKey:yesterdayKey, nextStreak:nextStreak, dailyReward:dailyReward, nextRewardDay:nextRewardDay, sanitizeSave:sanitizeSave, validSaveNum:validSaveNum, cloneTubes:cloneTubes, COLOURS:COLOURS, COLOUR_IDS:COLOUR_IDS, TUBE_CAP:TUBE_CAP, THEMES:THEMES, THEME_IDS:THEME_IDS, ACHIEVEMENTS:ACHIEVEMENTS, SHAPES:SHAPES, shapeOf:shapeOf, isLightColour:isLightColour, mulberry32:mulberry32}; }
+
+/* ============================================================
+   Playables SDK — safe stub when ytgame is absent.
+   Real platform: SDK script defines window.ytgame.
+   Local browser: stub keeps every call working, in memory only.
+   ============================================================ */
+var IN_PLAYABLES = false;
+var PLATFORM_LANG = 'en-US';
+var _memorySave = null;
+function getYtgame(){
+  if(typeof window!=='undefined' && window.ytgame && window.ytgame.game) return window.ytgame;
+  return null;
+}
+function sdk(){
+  var real = getYtgame();
+  if(real){ IN_PLAYABLES = !!(real.IN_PLAYABLES_ENV); return real; }
+  return {
+    IN_PLAYABLES_ENV:false,
+    game:{
+      firstFrameReady:function(){},
+      gameReady:function(){},
+      loadData:function(){ return Promise.resolve(_memorySave || {}); },
+      saveData:function(d){ _memorySave = d; return Promise.resolve(); }
+    },
+    system:{
+      onAudioEnabledChange:function(){},
+      onPause:function(){}, onResume:function(){},
+      getLanguage:function(){ return 'en-US'; }
+    },
+    ads:{
+      requestInterstitialAd:function(){ return Promise.resolve({adShown:false, reason:'stub-no-platform'}); },
+      requestRewardedAd:function(){ return Promise.resolve({adShown:false, reason:'stub-no-platform', rewardGranted:false}); }
+    }
+  };
+}
+function platformLang(){
+  try{ var y=getYtgame(); if(y && y.system && typeof y.system.getLanguage==='function'){ var l=y.system.getLanguage(); if(l) return l; } }catch(e){}
+  return 'en-US';
+}
+
+/* ============================================================
+   Game state + UI (runs only when the DOM is present).
+   ============================================================ */
+if(typeof document!=='undefined' && document.getElementById('app')){
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var state = {
+    screen:'menu', mode:'classic', level:1, score:0, coins:0, streak:0,
+    bestScore:0, bestLevel:0, dailyStreak:0, lastPlayDate:'',
+    current:null, tubes:[], locked:[], selected:-1, movesUsed:0,
+    history:[], rejected:0, elapsed:0, timer:null, paused:false, muted:false,
+    lastInterstitial:0, levelsSinceAd:0, dailyMode:false,
+    soundOn:true, audioCtx:null, pourToken:0, firstPourBonusGiven:false,
+    blitzBest:0, blitzSorts:0, blitzCombo:0, blitzScore:0, blitzTimeLeft:60, blitzTimer:null, blitzToken:0,
+    blitzTubes:[], blitzLocked:[], blitzSelected:-1,
+    themesOwned:['default'], activeTheme:'default', achievements:{},
+    missions:{date:'', levelsWon:0, done:false}, dailyClaimDay:0, lastRewardDate:'', tutorialSeen:false,
+    tutStep:0, tutTimer:null, tutAfterPlay:false
+  };
+  var saveLoaded = false, savePending = null;
+
+  function beep(freq, dur){
+    if(state.muted || !state.soundOn) return;
+    try{
+      if(!state.audioCtx) state.audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      var ctx=state.audioCtx, o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='sine'; o.frequency.value=freq||440; g.gain.value=0.08;
+      o.connect(g); g.connect(ctx.destination); o.start();
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+(dur||0.08));
+      o.stop(ctx.currentTime+(dur||0.08));
+    }catch(e){}
+  }
+  function fanfare(){ beep(523,0.09); setTimeout(function(){ beep(659,0.09); },90); setTimeout(function(){ beep(784,0.14); },180); }
+  function show(id){ ['menuScreen','tutorialScreen','playScreen','blitzScreen','blitzOverScreen','pauseScreen','levelScreen','failScreen'].forEach(function(s){ $(s).classList.toggle('hidden', s!==id); }); }
+  function popup(text){
+    var p=document.createElement('div'); p.className='popup'; p.textContent=text;
+    $('popups').appendChild(p);
+    setTimeout(function(){ if(p.parentNode) p.parentNode.removeChild(p); }, 950);
+  }
+  function showBanner(text){
+    var b=$('levelBanner'); b.textContent=text; b.classList.remove('hidden');
+    b.style.animation='none'; void b.offsetWidth; b.style.animation='';
+    setTimeout(function(){ b.classList.add('hidden'); }, 1250);
+  }
+  function burstConfetti(){
+    var c=$('confetti'); if(!c) return;
+    var cols=['#f59e0b','#ec4899','#22c55e','#3b82f6','#eab308','#a855f7'];
+    for(var i=0;i<40;i++){
+      var d=document.createElement('div'); d.className='confetti-bit';
+      d.style.left=(Math.random()*100)+'%'; d.style.background=cols[i%cols.length];
+      d.style.animationDelay=(Math.random()*0.25)+'s';
+      c.appendChild(d);
+      (function(el){ setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 1600); })(d);
+    }
+  }
+  function updateHud(){
+    $('levelPill').textContent = state.mode==='blitz' ? 'Blitz' : 'Level '+state.level + (state.dailyMode?' (Daily)':'');
+    $('scorePill').textContent = 'Score '+(state.mode==='blitz'?state.blitzScore:state.score);
+    $('movesPill').textContent = state.mode==='blitz' ? 'Sorts '+state.blitzSorts : (state.current && state.current.moveLimit ? 'Moves '+state.movesUsed+'/'+state.current.moveLimit : 'Moves '+state.movesUsed);
+    $('streakPill').textContent = (state.streak>=3?'🔥 ':'')+'Streak '+state.streak;
+    $('coinsPill').textContent = 'Coins '+state.coins;
+    $('saveLine').textContent = 'Best score: '+state.bestScore+' \u00b7 Best level: '+state.bestLevel+' \u00b7 Daily streak: '+state.dailyStreak+' day(s)';
+    $('bestLine').textContent = 'Blitz best: '+state.blitzBest+' sorts \u00b7 Theme: '+THEMES[state.activeTheme].label;
+    var total, left;
+    if(state.mode==='blitz'){ total=60; left=state.blitzTimeLeft; }
+    else if(state.current){ total=state.current.par; left=Math.max(0, state.current.par-state.elapsed); }
+    else { total=60; left=60; }
+    var frac = Math.max(0, Math.min(1, left/total));
+    $('timeBar').style.width = (frac*100)+'%';
+    $('timeBar').style.background = frac>0.5 ? '#22c55e' : (frac>0.25 ? '#f59e0b' : '#ef4444');
+    $('streakPill').classList.toggle('flame', state.streak>=3);
+    var done = state.current ? progressFraction(state.tubes, state.current.colours.length) : 0;
+    var lb=$('levelBar'); if(lb) lb.style.width = (state.mode==='blitz' ? Math.min(100, state.blitzSorts*10) : Math.round(done*100))+'%';
+    var lt=$('levelProgText'); if(lt) lt.textContent = state.mode==='blitz' ? 'Blitz progress: '+state.blitzSorts+' sorts' : 'Level progress: '+state.tubes.filter(isTubeComplete).length+'/'+(state.current?state.current.colours.length:0)+' tubes sorted';
+    $('timerText').textContent = state.mode==='blitz' ? Math.ceil(Math.max(0,left))+'s left' : (state.current ? 'Time bonus: '+Math.ceil(Math.max(0,left))+'s left of par '+state.current.par+'s' : 'Take your time');
+    renderAchievements(); renderMissions(); renderThemes(); renderCalendar();
+  }
+  function renderAchievements(){
+    var el=$('achList'); if(!el) return; el.innerHTML='';
+    ACHIEVEMENTS.forEach(function(a){
+      var s=document.createElement('span'); s.className='badge'+(state.achievements[a.id]?' earned':'');
+      s.textContent=(state.achievements[a.id]?'✓ ':'')+a.label; el.appendChild(s);
+    });
+  }
+  function unlockAchievement(id){
+    if(state.achievements[id]) return false;
+    var def=null; ACHIEVEMENTS.forEach(function(a){ if(a.id===id) def=a; });
+    if(!def) return false;
+    state.achievements[id]=true;
+    popup('🏆 '+def.label+' unlocked!');
+    showBanner('🏆 '+def.label+'!');
+    fanfare(); saveProgress(); updateHud();
+    return true;
+  }
+  function renderMissions(){
+    var el=$('missionLine'); if(!el) return;
+    var today=todayKey();
+    if(state.missions.date!==today){ state.missions={date:today, levelsWon:0, done:false}; }
+    el.textContent = 'Win 2 levels today — '+state.missions.levelsWon+'/2'+(state.missions.done?' ✓ Done (+30 coins)':'');
+  }
+  function trackLevelWin(){
+    var today=todayKey();
+    if(state.missions.date!==today) state.missions={date:today, levelsWon:0, done:false};
+    if(state.missions.done) return;
+    state.missions.levelsWon+=1;
+    if(state.missions.levelsWon>=2){ state.missions.done=true; state.coins+=30; popup('+30 coins — mission done!'); showBanner('🎯 Mission done! +30 coins'); }
+    saveProgress();
+  }
+  function renderThemes(){
+    var row=$('themeRow'); if(!row) return; row.innerHTML='';
+    THEME_IDS.forEach(function(id){
+      var t=THEMES[id];
+      var b=document.createElement('button'); b.type='button';
+      b.className = state.activeTheme===id ? 'theme-btn on' : 'theme-btn';
+      var owned = state.themesOwned.indexOf(id)!==-1;
+      b.textContent = t.label + (owned ? (state.activeTheme===id?' ✓ Active':' ✓ Owned') : ' — '+t.cost+' coins');
+      b.setAttribute('data-theme-id', id);
+      b.addEventListener('click', function(){ selectTheme(id); });
+      row.appendChild(b);
+    });
+  }
+  function applyTheme(){
+    try{
+      if(typeof document==='undefined' || !document.body) return;
+      if(state.activeTheme==='default') document.body.removeAttribute('data-theme');
+      else document.body.setAttribute('data-theme', state.activeTheme);
+    }catch(e){}
+  }
+  function selectTheme(id){
+    if(THEME_IDS.indexOf(id)===-1) return false;
+    if(state.themesOwned.indexOf(id)!==-1){ state.activeTheme=id; applyTheme(); saveProgress(); updateHud(); return true; }
+    var cost=THEMES[id].cost;
+    if(state.coins>=cost){
+      state.coins-=cost; state.themesOwned.push(id); state.activeTheme=id;
+      applyTheme(); popup('🎨 '+THEMES[id].label+' theme unlocked!'); saveProgress(); updateHud(); return true;
+    }
+    popup('Need '+cost+' coins for '+THEMES[id].label+'.');
+    return false;
+  }
+  function renderCalendar(){
+    var cal=$('rewardCal'); if(!cal) return; cal.innerHTML='';
+    var today=todayKey();
+    var nextDay = state.lastRewardDate===today ? state.dailyClaimDay : nextRewardDay(state.lastRewardDate, today, state.dailyClaimDay);
+    for(var d=1; d<=7; d++){
+      var cell=document.createElement('div');
+      cell.textContent='Day '+d+'\n+'+dailyReward(d);
+      if(d<nextDay || (state.lastRewardDate===today && d<=state.dailyClaimDay)) cell.className='done';
+      if(d===nextDay && state.lastRewardDate!==today) cell.className='today';
+      cal.appendChild(cell);
+    }
+    var btn=$('claimBtn');
+    btn.disabled = (state.lastRewardDate===today);
+    btn.textContent = state.lastRewardDate===today ? 'Claimed today ✓' : 'Claim Day '+nextDay+' reward (+'+dailyReward(nextDay)+' coins)';
+  }
+  function claimDaily(){
+    var today=todayKey();
+    if(state.lastRewardDate===today) return false;
+    var day = nextRewardDay(state.lastRewardDate, today, state.dailyClaimDay);
+    state.dailyClaimDay=day; state.lastRewardDate=today;
+    state.coins+=dailyReward(day);
+    state.dailyStreak = nextStreak(state.lastPlayDate, today, state.dailyStreak);
+    state.lastPlayDate=today;
+    if(state.dailyStreak>=3) unlockAchievement('daily3');
+    popup('+'+dailyReward(day)+' coins — Day '+day+' reward!');
+    showBanner('🎁 Day '+day+' reward: +'+dailyReward(day)+' coins');
+    fanfare(); saveProgress(); updateHud();
+    return true;
+  }
+  function saveProgress(){
+    if(!saveLoaded){ savePending=true; return Promise.resolve(); }
+    var data = {bestScore:state.bestScore, bestLevel:state.bestLevel, level:state.level, coins:state.coins, dailyStreak:state.dailyStreak, lastPlayDate:state.lastPlayDate, score:state.score,
+      blitzBest:state.blitzBest, themesOwned:state.themesOwned.slice(), activeTheme:state.activeTheme, achievements:state.achievements,
+      missions:state.missions, dailyClaimDay:state.dailyClaimDay, lastRewardDate:state.lastRewardDate, tutorialSeen:state.tutorialSeen};
+    try{
+      var p = sdk().game.saveData(data);
+      if(p && typeof p.catch==='function') p.catch(function(){});
+      return p;
+    }catch(e){ return Promise.resolve(); }
+  }
+  function loadProgress(){
+    return sdk().game.loadData().then(function(d){
+      var clean = sanitizeSave(d);
+      state.bestScore=clean.bestScore; state.bestLevel=clean.bestLevel; state.level=clean.level; state.coins=clean.coins;
+      state.dailyStreak=clean.dailyStreak; state.lastPlayDate=clean.lastPlayDate;
+      state.blitzBest=clean.blitzBest; state.themesOwned=clean.themesOwned; state.activeTheme=clean.activeTheme;
+      state.achievements=clean.achievements; state.missions=clean.missions;
+      state.dailyClaimDay=clean.dailyClaimDay; state.lastRewardDate=clean.lastRewardDate; state.tutorialSeen=clean.tutorialSeen;
+      applyTheme();
+      saveLoaded=true; updateHud();
+      if(savePending){ savePending=false; saveProgress(); }
+    }).catch(function(){ saveLoaded=true; updateHud(); if(savePending){ savePending=false; saveProgress(); } });
+  }
+  function stopTimer(){ if(state.timer){ clearInterval(state.timer); state.timer=null; } }
+  function stopBlitzTimer(){ if(state.blitzTimer){ clearInterval(state.blitzTimer); state.blitzTimer=null; } }
+  function startElapsedTimer(){
+    stopTimer();
+    state.timer = setInterval(function(){
+      if(state.paused || state.screen!=='play') return;
+      state.elapsed = state.elapsed + 0.25;
+      updateHud();
+    }, 250);
+  }
+
+  /* ---- Tube rendering ---- */
+  function topLabel(tubes, locked, i){
+    if(locked[i]) return '🔒 Locked';
+    var t=tubes[i];
+    if(!t.length) return 'Empty';
+    var c=topColour(t);
+    return shapeOf(c)+' '+COLOURS[c].label;
+  }
+  function renderBoard(boardEl, tubes, locked, selected, onTap){
+    boardEl.innerHTML='';
+    tubes.forEach(function(tube, idx){
+      var col=document.createElement('div'); col.className='tube-col';
+      var b=document.createElement('button');
+      b.type='button'; b.className='tube'+(selected===idx?' sel':'')+(locked[idx]?' locked':'');
+      b.setAttribute('aria-label', 'Tube '+(idx+1)+', top '+topLabel(tubes, locked, idx));
+      b.dataset.tube = String(idx);
+      tube.forEach(function(c){
+        var layer=document.createElement('div');
+        layer.className='layer'+(isLightColour(c)?' dark-ink':'');
+        layer.style.background=COLOURS[c].hex;
+        layer.textContent=shapeOf(c);
+        b.appendChild(layer);
+      });
+      if(locked[idx]){
+        var lock=document.createElement('span'); lock.className='lock-tag'; lock.textContent='🔒';
+        b.appendChild(lock);
+      }
+      b.addEventListener('click', function(){ onTap(idx); });
+      var lab=document.createElement('div'); lab.className='tube-label'; lab.textContent=topLabel(tubes, locked, idx);
+      col.appendChild(b); col.appendChild(lab);
+      boardEl.appendChild(col);
+    });
+  }
+  function renderClassicBoard(){ renderBoard($('tubesBoard'), state.tubes, state.locked, state.selected, tapTube); }
+  function renderBlitzBoard(){ renderBoard($('blitzBoard'), state.blitzTubes, state.blitzLocked, state.blitzSelected, tapBlitzTube); }
+  function dropAnimation(boardEl, toIdx, colour){
+    try{
+      var col = boardEl.children[toIdx];
+      if(!col) return;
+      var tubeBtn = col.children[0];
+      if(!tubeBtn) return;
+      var d=document.createElement('div');
+      d.className='droplet'; d.style.background=COLOURS[colour].hex;
+      tubeBtn.appendChild(d);
+      setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); }, 400);
+    }catch(e){}
+  }
+
+  /* ---- Classic play ---- */
+  function startLevel(level, seedRng){
+    state.mode='classic'; state.level=level; state.selected=-1; state.movesUsed=0;
+    state.history=[]; state.rejected=0; state.elapsed=0; state.pourToken+=1;
+    state.current = generateLevel(level, seedRng);
+    state.tubes = cloneTubes(state.current.tubes);
+    state.locked = state.current.locked.slice();
+    $('playTitle').textContent = state.dailyMode ? 'Daily Challenge — Level '+level : 'Level '+level+' — sort every tube to a single colour';
+    $('playHint').textContent = level<=3 ? 'Practice: only 3 colours and 2 empty tubes. Tap a tube, then tap where it should pour.' : 'Tap a tube to pick its top colour, then tap another tube to pour.';
+    $('pourMsg').textContent='';
+    renderClassicBoard(); show('playScreen'); state.screen='play'; state.paused=false;
+    updateHud(); startElapsedTimer(); beep(520,0.06);
+  }
+  function unlockNextLocked(){
+    for(var i=0;i<state.locked.length;i++){
+      if(state.locked[i]){ state.locked[i]=false; popup('🔓 A tube unlocked!'); return true; }
+    }
+    return false;
+  }
+  function rejectPour(boardEl, idx, reason){
+    state.rejected+=1;
+    var msg = {
+      'same-tube':'That is the same tube — tap it again to deselect.',
+      'empty-source':'That tube is empty — nothing to pour.',
+      'full':'That tube is full — pick another one.',
+      'mismatch':'Colours do not match — that tube needs the same top colour or must be empty.',
+      'locked':'That tube is locked — complete a pour to unlock it.',
+      'bad-tube':'That tube does not exist.'
+    }[reason] || 'That pour is not allowed.';
+    $('pourMsg').textContent = msg;
+    $('blitzMsg').textContent = msg;
+    try{
+      var col = boardEl.children[idx];
+      if(col && col.children[0]){ col.children[0].classList.add('shake'); setTimeout(function(){ col.children[0].classList.remove('shake'); }, 350); }
+    }catch(e){}
+    beep(180,0.12);
+  }
+  function tapTube(idx){
+    if(state.screen!=='play' || state.paused) return;
+    if(state.locked[idx]){ rejectPour($('tubesBoard'), idx, 'locked'); return; }
+    if(state.selected===-1){
+      if(!state.tubes[idx].length){ rejectPour($('tubesBoard'), idx, 'empty-source'); return; }
+      state.selected=idx; beep(440,0.05);
+      $('pourMsg').textContent='Selected Tube '+(idx+1)+' — '+topLabel(state.tubes, state.locked, idx)+'. Now tap where it should pour.';
+      renderClassicBoard(); updateHud(); return;
+    }
+    if(state.selected===idx){ state.selected=-1; $('pourMsg').textContent='Deselected.'; renderClassicBoard(); return; }
+    var from=state.selected, to=idx;
+    var chk=canPour(state.tubes, from, to);
+    if(!chk.ok){ rejectPour($('tubesBoard'), to, chk.reason); state.selected=-1; renderClassicBoard(); updateHud(); return; }
+    doPour(from, to);
+  }
+  function doPour(from, to){
+    var tok=state.pourToken;
+    state.history.push({tubes:cloneTubes(state.tubes), locked:state.locked.slice(), movesUsed:state.movesUsed});
+    if(state.history.length>50) state.history.shift();
+    var res=pourTubes(state.tubes, from, to);
+    state.tubes=res.tubes; state.movesUsed+=1; state.selected=-1;
+    state.coins+=1;
+    if(!state.firstPourBonusGiven){ state.firstPourBonusGiven=true; state.coins+=5; popup('+5 coins — first pour!'); unlockAchievement('first-pour'); }
+    else popup('+1 coin');
+    beep(660,0.07);
+    var unlocked = unlockNextLocked();
+    dropAnimation($('tubesBoard'), to, res.colour);
+    renderClassicBoard(); updateHud();
+    if(isSolved(state.tubes)){ setTimeout(function(){ if(tok===state.pourToken) completeLevel(); }, 350); return; }
+    if(state.current.moveLimit && state.movesUsed>=state.current.moveLimit){ setTimeout(function(){ if(tok===state.pourToken) failLevel('limit'); }, 350); return; }
+    if(noLegalMoves()){ setTimeout(function(){ if(tok===state.pourToken) failLevel('stuck'); }, 350); return; }
+    $('pourMsg').textContent='Poured '+res.moved+' × '+COLOURS[res.colour].label+' into Tube '+(to+1)+'.';
+  }
+  function noLegalMoves(){ return !hasLegalMove(state.tubes, state.locked); }
+  function completeLevel(){
+    stopTimer();
+    var gained = levelScore(state.level, state.movesUsed, state.current.moveLimit, state.streak, state.elapsed, state.current.par);
+    state.score+=gained; state.coins+=10; state.streak+=1;
+    if(state.score>state.bestScore) state.bestScore=state.score;
+    if(state.level>state.bestLevel) state.bestLevel=state.level;
+    popup('+'+gained+' points');
+    if(state.rejected===0) unlockAchievement('flawless');
+    if(state.bestLevel>=10) unlockAchievement('levels10');
+    if(state.streak>=3) showBanner('🔥 Streak x'+state.streak+'!');
+    else if(state.level%5===0) showBanner('Level '+state.level+' complete!');
+    burstConfetti(); fanfare();
+    trackLevelWin();
+    if(state.dailyMode){
+      state.coins+=50;
+      $('levelTitle').textContent='Daily Challenge complete! +50 coins';
+      $('levelDetail').textContent='Score '+state.score+' \u00b7 Moves '+state.movesUsed+' \u00b7 Streak '+state.streak;
+      $('adNote').textContent='';
+      state.dailyMode=false; saveProgress(); show('levelScreen'); state.screen='level'; updateHud(); return;
+    }
+    $('levelTitle').textContent='Level '+state.level+' complete! +'+gained+' points';
+    $('levelDetail').textContent='Score '+state.score+' \u00b7 Coins '+state.coins+' \u00b7 Moves '+state.movesUsed+' \u00b7 Streak '+state.streak;
+    state.levelsSinceAd+=1;
+    var now=Date.now();
+    if(state.levelsSinceAd>=3 && now-state.lastInterstitial>=90000){
+      state.levelsSinceAd=0; state.lastInterstitial=now;
+      $('adNote').textContent='An interstitial ad break may play here on YouTube Playables (between levels only).';
+      try{ var r=sdk().ads.requestInterstitialAd(); if(r && typeof r.catch==='function') r.catch(function(){}); }catch(e){}
+    }else{ $('adNote').textContent=''; }
+    saveProgress(); show('levelScreen'); state.screen='level'; updateHud();
+  }
+  function failLevel(reason){
+    stopTimer();
+    state.streak=0;
+    if(reason==='stuck'){
+      $('failDetail').textContent='No more legal pours on Level '+state.level+' — every tube is blocked. Continue for +5 moves, then Undo to back out — or retry the level fresh.';
+    }else{
+      $('failDetail').textContent='Level '+state.level+' used '+state.movesUsed+' moves (limit '+state.current.moveLimit+'). Your tubes stay as they are — continue for +5 moves, or retry the level fresh.';
+    }
+    saveProgress(); show('failScreen'); state.screen='fail'; updateHud();
+  }
+  function pauseGame(){
+    if(state.screen!=='play' && state.screen!=='blitz') return;
+    state.paused=true; show('pauseScreen'); state.screen='pause'; updateHud();
+  }
+  function resumeGame(){
+    state.paused=false;
+    if(state.mode==='blitz'){ show('blitzScreen'); state.screen='blitz'; }
+    else { show('playScreen'); state.screen='play'; }
+    updateHud();
+  }
+  function newRun(daily){
+    stopBlitzTimer();
+    state.mode='classic'; state.score=0; state.streak=0; state.levelsSinceAd=0; state.firstPourBonusGiven=false;
+    state.dailyMode=!!daily;
+    var today=todayKey();
+    state.dailyStreak = nextStreak(state.lastPlayDate, today, state.dailyStreak);
+    state.lastPlayDate=today;
+    if(state.dailyStreak>=3) unlockAchievement('daily3');
+    saveProgress();
+    if(daily){
+      var seed=0; for(var i=0;i<today.length;i++) seed=(seed*31 + today.charCodeAt(i))>>>0;
+      startLevel(1, mulberry32(seed));
+    }else{
+      startLevel(1);
+    }
+  }
+
+  /* ---- Blitz mode ---- */
+  function startBlitzMini(){
+    var mini = generateMini();
+    state.blitzTubes = cloneTubes(mini.tubes);
+    state.blitzLocked = mini.locked.slice();
+    state.blitzSelected = -1;
+    renderBlitzBoard();
+  }
+  function startBlitz(){
+    stopTimer(); stopBlitzTimer();
+    state.mode='blitz'; state.blitzSorts=0; state.blitzCombo=0; state.blitzScore=0; state.blitzTimeLeft=60; state.blitzToken+=1;
+    $('blitzMsg').textContent='';
+    startBlitzMini();
+    show('blitzScreen'); state.screen='blitz'; state.paused=false;
+    updateBlitzHud();
+    state.blitzTimer = setInterval(function(){
+      if(state.paused || state.screen!=='blitz') return;
+      state.blitzTimeLeft = Math.max(0, state.blitzTimeLeft-0.25);
+      updateBlitzHud();
+      if(state.blitzTimeLeft<=0) endBlitz();
+    }, 250);
+    beep(520,0.06);
+  }
+  function updateBlitzHud(){
+    $('blitzScore').textContent='Sorts '+state.blitzSorts+' \u00b7 Combo x'+Math.max(1,state.blitzCombo)+' \u00b7 Score '+state.blitzScore;
+    updateHud();
+  }
+  function tapBlitzTube(idx){
+    if(state.screen!=='blitz' || state.paused) return;
+    if(state.blitzSelected===-1){
+      if(!state.blitzTubes[idx].length){ rejectPour($('blitzBoard'), idx, 'empty-source'); state.blitzCombo=0; updateBlitzHud(); return; }
+      state.blitzSelected=idx; beep(440,0.05);
+      renderBlitzBoard(); return;
+    }
+    if(state.blitzSelected===idx){ state.blitzSelected=-1; renderBlitzBoard(); return; }
+    var from=state.blitzSelected, to=idx;
+    var chk=canPour(state.blitzTubes, from, to);
+    if(!chk.ok){ rejectPour($('blitzBoard'), to, chk.reason); state.blitzSelected=-1; state.blitzCombo=0; renderBlitzBoard(); updateBlitzHud(); return; }
+    var res=pourTubes(state.blitzTubes, from, to);
+    state.blitzTubes=res.tubes; state.blitzSelected=-1;
+    beep(660,0.07);
+    dropAnimation($('blitzBoard'), to, res.colour);
+    renderBlitzBoard();
+    if(isSolved(state.blitzTubes)){
+      var tok=state.blitzToken;
+      state.blitzSorts+=1; state.blitzCombo+=1;
+      var pts=blitzPoints(state.blitzCombo);
+      state.blitzScore+=pts; state.coins+=2;
+      popup('+'+pts+(state.blitzCombo>=2?' COMBO x'+state.blitzCombo:''));
+      if(state.blitzSorts>=5) unlockAchievement('blitz5');
+      fanfare();
+      setTimeout(function(){ if(tok===state.blitzToken && state.screen==='blitz') startBlitzMini(); }, 450);
+    }
+    updateBlitzHud();
+  }
+  function endBlitz(){
+    stopBlitzTimer();
+    var isBest = state.blitzSorts>state.blitzBest;
+    if(isBest) state.blitzBest=state.blitzSorts;
+    if(state.blitzSorts>=5) unlockAchievement('blitz5');
+    $('blitzOverDetail').textContent='You sorted '+state.blitzSorts+' mini-puzzles in 60 seconds \u00b7 Score '+state.blitzScore+(isBest?' \u00b7 NEW BEST!':' \u00b7 Best: '+state.blitzBest+' sorts')+' \u00b7 Coins '+state.coins+'.';
+    if(isBest){ showBanner('⚡ New Blitz best: '+state.blitzSorts+'!'); burstConfetti(); fanfare(); }
+    saveProgress(); show('blitzOverScreen'); state.screen='blitzover'; updateHud();
+  }
+
+  /* ---- Tutorial (3 steps, auto-advance, under 20 seconds) ---- */
+  var TUT_STEPS = [
+    {title:'Step 1 — Pick a tube', emoji:'🧪', text:'Tap a tube to select its top colour. Every colour has a name and a shape, so it works for everyone.'},
+    {title:'Step 2 — Pour it', emoji:'💧', text:'Tap another tube to pour. You can only pour onto the same colour, or into an empty tube.'},
+    {title:'Step 3 — Sort them all', emoji:'⭐', text:'Sort every tube to a single colour to win the level. Earn coins, build a streak, unlock themes!'}
+  ];
+  function showTutorial(afterPlay){
+    state.tutAfterPlay=!!afterPlay; state.tutStep=0;
+    show('tutorialScreen'); state.screen='tutorial'; renderTutStep();
+    clearTutTimer();
+    state.tutTimer=setInterval(function(){ advanceTutorial(); }, 6000);
+  }
+  function clearTutTimer(){ if(state.tutTimer){ clearInterval(state.tutTimer); state.tutTimer=null; } }
+  function renderTutStep(){
+    var s=TUT_STEPS[state.tutStep];
+    $('tutTitle').textContent=s.title; $('tutEmoji').textContent=s.emoji; $('tutText').textContent=s.text;
+    $('tutDots').textContent = TUT_STEPS.map(function(_,i){ return i===state.tutStep?'●':'○'; }).join('');
+    $('tutNextBtn').textContent = state.tutStep===TUT_STEPS.length-1 ? "Let's play!" : 'Next';
+  }
+  function advanceTutorial(){
+    if(state.tutStep < TUT_STEPS.length-1){ state.tutStep+=1; renderTutStep(); }
+    else finishTutorial();
+  }
+  function finishTutorial(){
+    clearTutTimer();
+    state.tutorialSeen=true; saveProgress();
+    if(state.tutAfterPlay) newRun(false);
+    else { show('menuScreen'); state.screen='menu'; updateHud(); }
+  }
+
+  // Buttons
+  $('playBtn').addEventListener('click', function(){
+    if(!state.tutorialSeen) showTutorial(true);
+    else newRun(false);
+  });
+  $('blitzBtn').addEventListener('click', function(){ startBlitz(); });
+  $('dailyBtn').addEventListener('click', function(){ newRun(true); });
+  $('tutorialBtn').addEventListener('click', function(){ showTutorial(false); });
+  $('tutNextBtn').addEventListener('click', function(){ clearTutTimer(); advanceTutorial(); if(state.screen==='tutorial'){ state.tutTimer=setInterval(function(){ advanceTutorial(); }, 6000); } });
+  $('tutSkipBtn').addEventListener('click', function(){ finishTutorial(); });
+  $('claimBtn').addEventListener('click', function(){ claimDaily(); });
+  $('soundBtn').addEventListener('click', function(){
+    state.soundOn=!state.soundOn;
+    $('soundBtn').textContent='Sound: '+(state.soundOn?'On':'Off');
+    $('soundBtn').setAttribute('aria-pressed', String(state.soundOn));
+    if(state.soundOn) beep(520,0.06);
+  });
+  $('undoBtn').addEventListener('click', function(){
+    if(state.screen!=='play' || state.paused) return;
+    if(!state.history.length){ $('pourMsg').textContent='Nothing to undo yet.'; return; }
+    if(state.coins<5){ $('pourMsg').textContent='Not enough coins for Undo (need 5).'; return; }
+    var prev=state.history.pop();
+    state.coins-=5; state.tubes=prev.tubes; state.locked=prev.locked; state.movesUsed=prev.movesUsed; state.selected=-1;
+    $('pourMsg').textContent='Undid the last pour (-5 coins).';
+    beep(500,0.05); renderClassicBoard(); updateHud(); saveProgress();
+  });
+  $('hintBtn').addEventListener('click', function(){
+    if(state.screen!=='play' || state.paused) return;
+    if(state.coins<10){ $('pourMsg').textContent='Not enough coins for a Hint (need 10). Finish a level to earn coins.'; return; }
+    var sol=solveLevel(state.tubes, state.locked, 20000);
+    if(!sol || !sol.length){ $('pourMsg').textContent='No hint available right now — try a different pour.'; return; }
+    state.coins-=10;
+    var mv=sol[0];
+    $('pourMsg').textContent='Hint: pour Tube '+(mv.from+1)+' into Tube '+(mv.to+1)+' (-10 coins).';
+    try{
+      var board=$('tubesBoard');
+      [mv.from, mv.to].forEach(function(idx){
+        var col=board.children[idx];
+        if(col && col.children[0]){ col.children[0].classList.add('hint-glow'); setTimeout(function(){ col.children[0].classList.remove('hint-glow'); }, 2000); }
+      });
+    }catch(e){}
+    beep(600,0.06); updateHud(); saveProgress();
+  });
+  $('pauseBtn').addEventListener('click', pauseGame);
+  $('blitzPauseBtn').addEventListener('click', pauseGame);
+  $('resumeBtn').addEventListener('click', resumeGame);
+  $('menuBtn').addEventListener('click', function(){ stopTimer(); stopBlitzTimer(); state.mode='classic'; state.screen='menu'; show('menuScreen'); updateHud(); });
+  $('levelMenuBtn').addEventListener('click', function(){ state.mode='classic'; state.screen='menu'; show('menuScreen'); updateHud(); });
+  $('failMenuBtn').addEventListener('click', function(){ state.mode='classic'; state.screen='menu'; show('menuScreen'); updateHud(); });
+  $('blitzMenuBtn').addEventListener('click', function(){ stopBlitzTimer(); state.mode='classic'; state.screen='menu'; show('menuScreen'); updateHud(); });
+  $('blitzOverMenuBtn').addEventListener('click', function(){ state.mode='classic'; state.screen='menu'; show('menuScreen'); updateHud(); });
+  $('blitzAgainBtn').addEventListener('click', function(){ startBlitz(); });
+  $('nextBtn').addEventListener('click', function(){ startLevel(state.level+1); });
+  $('retryBtn').addEventListener('click', function(){ startLevel(state.level); });
+  $('continueBtn').addEventListener('click', function(){
+    function grant(){
+      state.current.moveLimit+=5;
+      $('failDetail').textContent='Continued with +5 moves (limit now '+state.current.moveLimit+').';
+      state.screen='play'; show('playScreen'); startElapsedTimer(); updateHud();
+    }
+    function decline(){ $('failDetail').textContent='The ad did not play — no extra moves given. Tap Continue to try again, or Retry level to start fresh.'; }
+    try{
+      var p=sdk().ads.requestRewardedAd('continue-moves');
+      Promise.resolve(p).then(function(r){
+        r=r||{};
+        if(r.reason==='stub-no-platform' || r.adShown || r.rewardGranted) grant();
+        else decline();
+      }).catch(function(){ decline(); });
+    }catch(e){ decline(); }
+  });
+
+  // Keyboard: 1-7 pick a tube, U undo, H hint, Esc pause.
+  document.addEventListener('keydown', function(e){
+    if(state.screen==='tutorial'){ if(e.key==='Escape') finishTutorial(); return; }
+    if(state.screen!=='play' && state.screen!=='blitz'){ if(e.key==='Escape' && state.screen==='pause') resumeGame(); return; }
+    if(state.paused) { if(e.key==='Escape') resumeGame(); return; }
+    if(e.key==='Escape'){ pauseGame(); return; }
+    var n=parseInt(e.key,10);
+    if(n>=1 && n<=9){
+      if(state.screen==='blitz'){ if(n<=state.blitzTubes.length) tapBlitzTube(n-1); }
+      else if(n<=state.tubes.length) tapTube(n-1);
+      return;
+    }
+    if(state.screen==='play'){
+      if(e.key==='u' || e.key==='U') $('undoBtn').click();
+      if(e.key==='h' || e.key==='H') $('hintBtn').click();
+    }
+  });
+  document.addEventListener('visibilitychange', function(){ if(document.hidden && (state.screen==='play' || state.screen==='blitz')) pauseGame(); });
+
+  // Platform hooks — registered once, guarded so a missing API never breaks the game.
+  try{
+    var y=sdk();
+    if(y && y.system){
+      if(typeof y.system.onAudioEnabledChange==='function') y.system.onAudioEnabledChange(function(on){ state.muted=!on; });
+      if(typeof y.system.onPause==='function') y.system.onPause(function(){ if(state.screen==='play' || state.screen==='blitz') pauseGame(); });
+      if(typeof y.system.onResume==='function') y.system.onResume(function(){ if(state.screen==='pause') resumeGame(); });
+    }
+  }catch(e){}
+  PLATFORM_LANG = platformLang();
+
+  // Boot: firstFrameReady now (loading screen is visible), load save, then gameReady.
+  try{ sdk().game.firstFrameReady(); }catch(e){}
+  show('menuScreen'); updateHud();
+  loadProgress().then(function(){ try{ sdk().game.gameReady(); }catch(e){} });
+})();
+}
+</script>
+</body>
+</html>
