@@ -7,8 +7,8 @@ A single-file HTML5 puzzle game built for YouTube Playables.
   - Do NOT use `hello@getcerttracker.com`.
   - No sign-in was performed while building this game. Nothing was submitted anywhere.
 - **Audience:** Ages **13+ only**, general audience, English (US tier-1: US / UK / Canada / Australia). **NOT made for kids.** No child characters, no kids branding.
-- **Version:** **v1** (2026-11-12).
-- **File:** `index.html` — **63,188 bytes (~61.7 KB)**, self-contained. No external libraries, images, fonts, or audio files. The only external URL in the file is the official Playables SDK script tag.
+- **Version:** **v2** (2026-11-12) — world-class design + engagement upgrade; gameplay, levels, scoring, prices and compliance behaviour unchanged from v1.
+- **File:** `index.html` — **74,335 bytes (~72.6 KB)**, self-contained. No external libraries, images, fonts, or audio files. The only external URL in the file is the official Playables SDK script tag.
 - **Sister game:** Mix & Spell v2 (`../mix-and-spell/`, 60,940 bytes) — same design system, same SDK pattern, different mechanic (colour-mix + spelling vs tube sorting). The two games do not overlap.
 
 ## How to play
@@ -43,14 +43,14 @@ A single-file HTML5 puzzle game built for YouTube Playables.
 
 Note on the spec: the brief said "L1–3 tutorial-easy (3 colours, 4 tubes, 2 empty)". 3 colours need 3 tubes, plus 2 empty tubes = 5 tubes, so 4 total is arithmetically impossible; the game uses 5 tubes (3 colour + 2 empty) and this is the documented interpretation.
 
-## Design System (same as Mix & Spell v2, for brand consistency)
+## Design System v2 (world-class, same as Mix & Spell v2, for brand consistency)
 
 - **Base theme — Royal Indigo:** background gradient `#0F172A → #1E1B4B → #312E81`; glassmorphism cards (rgba white 8%, blur 12px, 1px light border, 20px radius, soft shadow); text `#F8FAFC`, muted `#CBD5E1` (WCAG AA — never light grey on dark).
 - **Primary:** Indigo `#6366F1` → Violet `#8B5CF6` gradient on buttons/accents. **Gold `#F59E0B / #FBBF24` only** for coins, rewards, streaks, achievements. Success `#10B981`, Danger `#EF4444`, Warning `#F59E0B`.
-- **Typography:** system font stack only — `-apple-system, "Segoe UI", Roboto, Helvetica, Arial` (no external fonts, Playables rule). Title 800 / 32px / −0.5px letter-spacing, gradient text. Section headings 700 / 20px. Body 500 / 16px. Buttons 700 / 16px, normal case.
-- **Spacing:** 8pt grid (8/16/24px); cards padding 20px; buttons min-height 52px; tap targets ≥48px (tubes 64px wide, 132px tall); radius 16px cards / 999px pill buttons / 12px chips.
-- **Micro-interactions (CSS only):** button press scale 0.97, hover lift, selected tube lifts + gold glow, wrong pour = gentle shake, correct pour = droplet animation + "+1 coin" popup, level complete = confetti burst (CSS-drawn), streak = flame glow, level-up banner, timer bar green → amber → red, level progress bar (sorted tubes / total colours).
-- **Game colours — colour-blind safe:** every colour has a name label AND a distinct shape glyph (never colour alone), shown on every layer and under every tube. Red `#EF4444` ●, Blue `#3B82F6` ■, Yellow `#FACC15` ▲ (dark `#1F2937` ink — the only light colour), Green `#22C55E` ◆, Purple `#A855F7` ★, Orange `#F97316` ⬢, Pink `#EC4899` ♥, Teal `#14B8A6` ✚.
+- **Typography:** system font stack only — `-apple-system, "Segoe UI", Roboto, Helvetica, Arial` (no external fonts, Playables rule). Title 800 / 40px / −1px letter-spacing, gradient text (header 36px). Section headings 700 / 20px. Body 500 / 16px. Buttons 700 / 16px, normal case.
+- **Spacing:** 8pt grid (8/16/24px); cards padding 20px; buttons min-height 52px; tap targets ≥48px (tubes flex to fit — 44–64px wide by viewport, 108–132px tall — always one clean row, never wrapped); radius 16px cards / 999px pill buttons / 12px chips.
+- **Micro-interactions (CSS only):** layered ambient glows + glass depth, button press scale 0.95 + hover glow + focus-visible gold outline, selected tube lifts + pulsing gold selection ring, wrong pour = shake (now actually visible — see TEST-REPORT §11), correct pour = tilt + liquid stream + splash particles + droplet + "+1 coin" popup, level complete = confetti burst (CSS-drawn) + gold win-sparkle card, streak = flame glow that grows at x5/x10, level-up banner, timer bar green → amber → red, level progress bar (sorted tubes / total colours), Blitz combo meter (gold) + growing combo popups.
+- **Game colours — colour-blind safe:** every colour has a name label AND a distinct shape glyph (never colour alone), shown on every layer and under every tube. Liquid layers are true gradients (base colour → 30-step darker shade) with a curved meniscus highlight, a shine streak and rising bubbles, so a pour reads as liquid, not a colour swap. Red `#EF4444` ●, Blue `#3B82F6` ■, Yellow `#FACC15` ▲ (dark `#1F2937` ink — the only light colour), Green `#22C55E` ◆, Purple `#A855F7` ★, Orange `#F97316` ⬢, Pink `#EC4899` ♥, Teal `#14B8A6` ✚.
 - **Unlockable themes (coins only, NO purchases)** — each changes the FULL palette, not just the background: (1) Default Royal Indigo, (2) Sunset — bg `#1C0A2E → #7C2D12`, primary `#F97316 → #EC4899`, (3) Ocean — bg `#082F49 → #0E7490`, primary `#06B6D4 → #3B82F6`, (4) Forest — bg `#052E16 → #14532D`, primary `#22C55E → #14B8A6`. Theme switch applies instantly, saves via the SDK, and persists across reload.
 - **One style on every screen:** menu, play, blitz, pause, level-complete, level-failed — same header, same buttons, same spacing. Menu shows the game name in big gradient text with best score / coins / streak chips.
 
@@ -75,7 +75,7 @@ Note on the spec: the brief said "L1–3 tutorial-easy (3 colours, 4 tubes, 2 em
 3. Play at least Levels 1–12 (see `TEST-REPORT.md` for the automated playthrough).
 4. Resize the window / rotate the phone: the layout is responsive for portrait, landscape, 1:1, 16:9 and 9:16.
 5. Check the browser console: there should be no errors and no network requests except the SDK script (which is a no-op locally if it fails to load — the built-in stub takes over).
-6. Run the automated suites: `node tests/unit.js`, `node tests/playthrough.js`, `node tests/full.js`, `node tests/new.js` — all must pass with 0 failures (492 checks total).
+6. Run the automated suites: `node tests/unit.js`, `node tests/playthrough.js`, `node tests/full.js`, `node tests/new.js`, `node tests/design.js` — all must pass with 0 failures (550 checks total).
 
 ## What is NOT done yet (needs the user, not this build)
 
@@ -95,4 +95,5 @@ Note on the spec: the brief said "L1–3 tutorial-easy (3 colours, 4 tubes, 2 em
 | `tests/playthrough.js` | Stubbed-DOM playthrough: levels 1–8 + Blitz + daily, undo/hint/locks |
 | `tests/full.js` | Full-scenario suite: SDK mock, timer, ads, save/load, keyboard, stress |
 | `tests/new.js` | New-feature suite: tutorial, Blitz combo, achievements/missions/themes, daily, juice, design |
-| `tests/screenshots/` | Headless-Chrome screenshots (menu / play / Blitz, 4 themes, 4 sizes) |
+| `tests/screenshots/` | Headless-Chrome screenshots (menu / play / Blitz, 4 themes, 5 sizes; `v2-*` = v2 shots, older files = v1) |
+| `tests/design.js` | Design/engagement suite (v2): all 4 themes applied, pour/win/combo animation classes, one-row layout tokens, tap targets, contrast tokens, HUD behaviour — 52 checks |
